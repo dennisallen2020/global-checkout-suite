@@ -7,7 +7,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Settings, 
@@ -15,14 +14,15 @@ import {
   Shield, 
   BarChart3, 
   Mail, 
-  Globe,
-  Upload,
-  Save,
   Eye,
-  DollarSign,
+  Save,
   Users,
-  TrendingUp
+  Activity
 } from 'lucide-react';
+
+import { Dashboard } from './admin/Dashboard';
+import { EmailConfig } from './admin/EmailConfig';
+import { OnlineUsers } from './admin/OnlineUsers';
 
 interface AdminConfig {
   productName: string;
@@ -71,35 +71,15 @@ export const AdminPanel: React.FC = () => {
     adminPassword: 'admin123'
   });
 
-  const [stats, setStats] = useState({
-    totalSales: 0,
-    totalRevenue: 0,
-    todaySales: 0,
-    uniqueCustomers: 0,
-    conversionRate: 0
-  });
-
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     if (password === config.adminPassword) {
       setIsAuthenticated(true);
-      loadStats();
     } else {
       alert('Invalid password!');
     }
-  };
-
-  const loadStats = () => {
-    // Simulate loading statistics
-    setStats({
-      totalSales: 1247,
-      totalRevenue: 121063,
-      todaySales: 23,
-      uniqueCustomers: 1098,
-      conversionRate: 12.4
-    });
   };
 
   const handleConfigChange = (key: string, value: any) => {
@@ -122,7 +102,6 @@ export const AdminPanel: React.FC = () => {
   const saveConfiguration = async () => {
     setSaveStatus('saving');
     try {
-      // Simulate API call to save configuration
       await new Promise(resolve => setTimeout(resolve, 1000));
       localStorage.setItem('checkoutConfig', JSON.stringify(config));
       setSaveStatus('saved');
@@ -136,7 +115,6 @@ export const AdminPanel: React.FC = () => {
   const exportData = () => {
     const data = {
       config,
-      stats,
       exportDate: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -150,29 +128,30 @@ export const AdminPanel: React.FC = () => {
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center">
-              <Shield className="w-8 h-8 mx-auto mb-2" />
-              Admin Access
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <Card className="w-full max-w-md shadow-2xl">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl font-bold text-gray-800">
+              <Shield className="w-8 h-8 mx-auto mb-4 text-blue-600" />
+              Painel Administrativo
             </CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
-                <Label htmlFor="password">Admin Password</Label>
+                <Label htmlFor="password">Senha de Acesso</Label>
                 <Input
                   id="password"
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter admin password"
+                  placeholder="Digite sua senha"
                   required
+                  className="mt-1"
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Login
+              <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                Entrar
               </Button>
             </form>
           </CardContent>
@@ -182,134 +161,83 @@ export const AdminPanel: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Checkout Admin Panel</h1>
-          <div className="flex space-x-2">
-            <Button onClick={exportData} variant="outline">
-              Export Data
-            </Button>
-            <Button onClick={saveConfiguration} disabled={saveStatus === 'saving'}>
-              <Save className="w-4 h-4 mr-2" />
-              {saveStatus === 'saving' ? 'Saving...' : 'Save Changes'}
-            </Button>
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <div className="bg-white border-b shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center py-6">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Painel Administrativo</h1>
+              <p className="text-gray-600">Gerencie seu checkout e vendas</p>
+            </div>
+            <div className="flex space-x-3">
+              <Button onClick={exportData} variant="outline">
+                Exportar Dados
+              </Button>
+              <Button onClick={saveConfiguration} disabled={saveStatus === 'saving'}>
+                <Save className="w-4 h-4 mr-2" />
+                {saveStatus === 'saving' ? 'Salvando...' : 'Salvar'}
+              </Button>
+            </div>
           </div>
         </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {saveStatus === 'saved' && (
-          <Alert className="mb-4 border-green-500 bg-green-50">
-            <AlertDescription>Configuration saved successfully!</AlertDescription>
+          <Alert className="mb-6 border-green-500 bg-green-50">
+            <AlertDescription>Configurações salvas com sucesso!</AlertDescription>
           </Alert>
         )}
 
         <Tabs defaultValue="dashboard" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="dashboard">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Dashboard
+          <TabsList className="grid w-full grid-cols-7 bg-white p-1 rounded-lg shadow-sm">
+            <TabsTrigger value="dashboard" className="flex items-center space-x-2">
+              <BarChart3 className="w-4 h-4" />
+              <span>Dashboard</span>
             </TabsTrigger>
-            <TabsTrigger value="product">
-              <Settings className="w-4 h-4 mr-2" />
-              Product
+            <TabsTrigger value="online" className="flex items-center space-x-2">
+              <Activity className="w-4 h-4" />
+              <span>Online</span>
             </TabsTrigger>
-            <TabsTrigger value="design">
-              <Palette className="w-4 h-4 mr-2" />
-              Design
+            <TabsTrigger value="product" className="flex items-center space-x-2">
+              <Settings className="w-4 h-4" />
+              <span>Produto</span>
             </TabsTrigger>
-            <TabsTrigger value="security">
-              <Shield className="w-4 h-4 mr-2" />
-              Security
+            <TabsTrigger value="design" className="flex items-center space-x-2">
+              <Palette className="w-4 h-4" />
+              <span>Design</span>
             </TabsTrigger>
-            <TabsTrigger value="notifications">
-              <Mail className="w-4 h-4 mr-2" />
-              Notifications
+            <TabsTrigger value="email" className="flex items-center space-x-2">
+              <Mail className="w-4 h-4" />
+              <span>Email</span>
             </TabsTrigger>
-            <TabsTrigger value="preview">
-              <Eye className="w-4 h-4 mr-2" />
-              Preview
+            <TabsTrigger value="security" className="flex items-center space-x-2">
+              <Shield className="w-4 h-4" />
+              <span>Segurança</span>
+            </TabsTrigger>
+            <TabsTrigger value="preview" className="flex items-center space-x-2">
+              <Eye className="w-4 h-4" />
+              <span>Preview</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="dashboard" className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Total Sales</p>
-                      <p className="text-3xl font-bold">{stats.totalSales}</p>
-                    </div>
-                    <DollarSign className="w-8 h-8 text-green-600" />
-                  </div>
-                </CardContent>
-              </Card>
+          <TabsContent value="dashboard">
+            <Dashboard />
+          </TabsContent>
 
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Total Revenue</p>
-                      <p className="text-3xl font-bold">${stats.totalRevenue.toLocaleString()}</p>
-                    </div>
-                    <TrendingUp className="w-8 h-8 text-blue-600" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Today's Sales</p>
-                      <p className="text-3xl font-bold">{stats.todaySales}</p>
-                    </div>
-                    <BarChart3 className="w-8 h-8 text-purple-600" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">Unique Customers</p>
-                      <p className="text-3xl font-bold">{stats.uniqueCustomers}</p>
-                    </div>
-                    <Users className="w-8 h-8 text-orange-600" />
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Recent Activity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {[1, 2, 3, 4, 5].map((item) => (
-                    <div key={item} className="flex items-center justify-between p-4 border rounded-lg">
-                      <div>
-                        <p className="font-medium">New purchase from customer #{1000 + item}</p>
-                        <p className="text-sm text-gray-600">{new Date().toLocaleString()}</p>
-                      </div>
-                      <Badge variant="secondary">$97.00</Badge>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="online">
+            <OnlineUsers />
           </TabsContent>
 
           <TabsContent value="product" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Product Configuration</CardTitle>
+                <CardTitle>Configuração do Produto</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="productName">Product Name</Label>
+                  <Label htmlFor="productName">Nome do Produto</Label>
                   <Input
                     id="productName"
                     value={config.productName}
@@ -318,7 +246,7 @@ export const AdminPanel: React.FC = () => {
                 </div>
                 
                 <div>
-                  <Label htmlFor="productDescription">Product Description</Label>
+                  <Label htmlFor="productDescription">Descrição do Produto</Label>
                   <Textarea
                     id="productDescription"
                     value={config.productDescription}
@@ -328,7 +256,7 @@ export const AdminPanel: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="originalPrice">Original Price</Label>
+                    <Label htmlFor="originalPrice">Preço Original</Label>
                     <Input
                       id="originalPrice"
                       type="number"
@@ -339,7 +267,7 @@ export const AdminPanel: React.FC = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor="salePrice">Sale Price</Label>
+                    <Label htmlFor="salePrice">Preço de Venda</Label>
                     <Input
                       id="salePrice"
                       type="number"
@@ -351,7 +279,7 @@ export const AdminPanel: React.FC = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="currency">Currency</Label>
+                  <Label htmlFor="currency">Moeda</Label>
                   <Input
                     id="currency"
                     value={config.currency}
@@ -360,7 +288,7 @@ export const AdminPanel: React.FC = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="stripeKey">Stripe Publishable Key</Label>
+                  <Label htmlFor="stripeKey">Chave Pública do Stripe</Label>
                   <Input
                     id="stripeKey"
                     type="password"
@@ -375,12 +303,12 @@ export const AdminPanel: React.FC = () => {
           <TabsContent value="design" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Design Customization</CardTitle>
+                <CardTitle>Personalização Visual</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-3 gap-4">
                   <div>
-                    <Label htmlFor="primaryColor">Primary Color</Label>
+                    <Label htmlFor="primaryColor">Cor Primária</Label>
                     <Input
                       id="primaryColor"
                       type="color"
@@ -390,7 +318,7 @@ export const AdminPanel: React.FC = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor="secondaryColor">Secondary Color</Label>
+                    <Label htmlFor="secondaryColor">Cor Secundária</Label>
                     <Input
                       id="secondaryColor"
                       type="color"
@@ -400,7 +328,7 @@ export const AdminPanel: React.FC = () => {
                   </div>
                   
                   <div>
-                    <Label htmlFor="backgroundColor">Background Color</Label>
+                    <Label htmlFor="backgroundColor">Cor de Fundo</Label>
                     <Input
                       id="backgroundColor"
                       type="color"
@@ -411,38 +339,42 @@ export const AdminPanel: React.FC = () => {
                 </div>
 
                 <div>
-                  <Label htmlFor="logoUrl">Logo URL</Label>
+                  <Label htmlFor="logoUrl">URL do Logo</Label>
                   <Input
                     id="logoUrl"
                     value={config.logoUrl}
                     onChange={(e) => handleConfigChange('logoUrl', e.target.value)}
-                    placeholder="https://example.com/logo.png"
+                    placeholder="https://exemplo.com/logo.png"
                   />
                 </div>
 
                 <div>
-                  <Label htmlFor="bannerUrl">Banner URL</Label>
+                  <Label htmlFor="bannerUrl">URL do Banner</Label>
                   <Input
                     id="bannerUrl"
                     value={config.bannerUrl}
                     onChange={(e) => handleConfigChange('bannerUrl', e.target.value)}
-                    placeholder="https://example.com/banner.jpg"
+                    placeholder="https://exemplo.com/banner.jpg"
                   />
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
+          <TabsContent value="email">
+            <EmailConfig />
+          </TabsContent>
+
           <TabsContent value="security" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Security Features</CardTitle>
+                <CardTitle>Recursos de Segurança</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label htmlFor="antiRightClick">Anti Right Click</Label>
-                    <p className="text-sm text-gray-600">Prevents right-click context menu</p>
+                    <Label htmlFor="antiRightClick">Bloquear Clique Direito</Label>
+                    <p className="text-sm text-gray-600">Impede o menu de contexto</p>
                   </div>
                   <Switch
                     id="antiRightClick"
@@ -453,8 +385,8 @@ export const AdminPanel: React.FC = () => {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label htmlFor="antiCopy">Anti Copy</Label>
-                    <p className="text-sm text-gray-600">Prevents text selection and copying</p>
+                    <Label htmlFor="antiCopy">Bloquear Cópia</Label>
+                    <p className="text-sm text-gray-600">Impede seleção e cópia de texto</p>
                   </div>
                   <Switch
                     id="antiCopy"
@@ -465,8 +397,8 @@ export const AdminPanel: React.FC = () => {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <Label htmlFor="antiDevTools">Anti Developer Tools</Label>
-                    <p className="text-sm text-gray-600">Blocks access to browser dev tools</p>
+                    <Label htmlFor="antiDevTools">Bloquear DevTools</Label>
+                    <p className="text-sm text-gray-600">Bloqueia ferramentas de desenvolvedor</p>
                   </div>
                   <Switch
                     id="antiDevTools"
@@ -478,7 +410,7 @@ export const AdminPanel: React.FC = () => {
                 <div className="flex items-center justify-between">
                   <div>
                     <Label htmlFor="antiDebug">Anti Debug</Label>
-                    <p className="text-sm text-gray-600">Prevents debugging attempts</p>
+                    <p className="text-sm text-gray-600">Previne tentativas de debugging</p>
                   </div>
                   <Switch
                     id="antiDebug"
@@ -490,39 +422,18 @@ export const AdminPanel: React.FC = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="notifications" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Email Notifications</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <Label htmlFor="emailNotifications">Enable Email Notifications</Label>
-                    <p className="text-sm text-gray-600">Send email alerts for new purchases</p>
-                  </div>
-                  <Switch
-                    id="emailNotifications"
-                    checked={config.emailNotifications}
-                    onCheckedChange={(checked) => handleConfigChange('emailNotifications', checked)}
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
           <TabsContent value="preview" className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Live Preview</CardTitle>
+                <CardTitle>Visualização do Checkout</CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-600 mb-4">
-                  Preview how your checkout page will look with current settings.
+                  Visualize como seu checkout aparece para os clientes.
                 </p>
                 <Button className="w-full" onClick={() => window.open('/', '_blank')}>
                   <Eye className="w-4 h-4 mr-2" />
-                  Open Live Preview
+                  Abrir Preview
                 </Button>
               </CardContent>
             </Card>
