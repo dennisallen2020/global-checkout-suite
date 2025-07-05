@@ -67,7 +67,8 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
       }
 
       // Create payment intent
-      const response = await fetch('/api/create-payment-intent', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const response = await fetch(`${apiUrl}/api/create-payment-intent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -79,6 +80,10 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
           customer_data: customerData,
         }),
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to create payment intent');
+      }
 
       const { client_secret } = await response.json();
 
@@ -92,7 +97,7 @@ export const CheckoutForm: React.FC<CheckoutFormProps> = ({
       setPaymentStatus('success');
       
       // Send notification email
-      await fetch('/api/send-notification', {
+      await fetch(`${apiUrl}/api/send-notification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

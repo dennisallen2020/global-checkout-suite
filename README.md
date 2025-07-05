@@ -1,73 +1,212 @@
-# Welcome to your Lovable project
+# Global Checkout - Sistema de Pagamento Avançado
 
-## Project info
+## 🚀 Sobre o Projeto
 
-**URL**: https://lovable.dev/projects/a6fc7cef-ac02-49bf-8479-41da258c1660
+O Global Checkout é uma solução completa de checkout/pagamento desenvolvida em React + TypeScript com recursos avançados de:
 
-## How can I edit this code?
+- ✅ **Checkout em uma página** - Fluxo otimizado para conversão
+- ✅ **Multi-idioma** - Suporte a 15+ idiomas
+- ✅ **Multi-moeda** - Detecção automática de país/moeda
+- ✅ **Geolocalização** - Preços e idioma automáticos
+- ✅ **Integração Stripe** - Pagamentos seguros
+- ✅ **Painel Admin** - Gestão completa
+- ✅ **Recursos de Segurança** - Proteção anti-fraud
+- ✅ **Design Responsivo** - Funciona em todos os dispositivos
 
-There are several ways of editing your application.
+## 🛠️ Tecnologias Utilizadas
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Vite
+- **UI/UX**: shadcn/ui, Tailwind CSS
+- **Pagamentos**: Stripe
+- **Formulários**: React Hook Form, Zod
+- **Internacionalização**: Sistema próprio
+- **Deployment**: Vercel/Netlify ready
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a6fc7cef-ac02-49bf-8479-41da258c1660) and start prompting.
+## 📋 Pré-requisitos
 
-Changes made via Lovable will be committed automatically to this repo.
+- Node.js 18+ 
+- npm ou yarn
+- Conta Stripe (para pagamentos)
 
-**Use your preferred IDE**
+## 🚀 Instalação e Configuração
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 1. Clone o repositório
+```bash
+git clone <URL_DO_REPOSITORIO>
+cd global-checkout
+```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 2. Instale as dependências
+```bash
+npm install
+```
 
-Follow these steps:
+### 3. Configure as variáveis de ambiente
+```bash
+# Copie o arquivo de exemplo
+cp .env.example .env.local
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Edite o arquivo .env.local com suas configurações
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+### 4. Configure o Stripe
+1. Crie uma conta no [Stripe](https://stripe.com)
+2. Obtenha suas chaves API (Publishable Key e Secret Key)
+3. Configure no arquivo `.env.local`
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+### 5. Execute o projeto
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+O projeto estará disponível em `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📁 Estrutura do Projeto
 
-**Use GitHub Codespaces**
+```
+src/
+├── components/          # Componentes React
+│   ├── ui/             # Componentes de UI (shadcn)
+│   ├── admin/          # Componentes administrativos
+│   ├── CheckoutSystem.tsx
+│   ├── CheckoutForm.tsx
+│   └── AdminPanel.tsx
+├── pages/              # Páginas da aplicação
+├── hooks/              # Hooks customizados
+├── i18n/               # Internacionalização
+├── config/             # Configurações
+└── styles/             # Estilos globais
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## 🎯 Funcionalidades Principais
 
-## What technologies are used for this project?
+### Checkout
+- Formulário de dados do cliente
+- Integração com Stripe
+- Validação em tempo real
+- Múltiplas moedas
+- Preços dinâmicos por localização
 
-This project is built with:
+### Painel Administrativo
+- Dashboard com métricas
+- Configuração de produtos
+- Personalização visual
+- Gerenciamento de segurança
+- Relatórios de vendas
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+### Recursos Avançados
+- Detecção automática de país/idioma
+- Conversão de moedas
+- Sistema de notificações
+- Recursos de segurança
+- Responsividade completa
 
-## How can I deploy this project?
+## 🔧 Configuração Avançada
 
-Simply open [Lovable](https://lovable.dev/projects/a6fc7cef-ac02-49bf-8479-41da258c1660) and click on Share -> Publish.
+### Stripe
+```typescript
+// Configurar chaves do Stripe
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+```
 
-## Can I connect a custom domain to my Lovable project?
+### Personalização
+```typescript
+// src/config/checkout-config.ts
+export const defaultConfig = {
+  productName: "Seu Produto",
+  productDescription: "Descrição do produto",
+  originalPrice: 297.00,
+  salePrice: 97.00,
+  currency: "USD",
+  // ... outras configurações
+};
+```
 
-Yes, you can!
+## 📱 Páginas Disponíveis
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- `/` - Checkout principal
+- `/admin` - Painel administrativo
+- `/404` - Página não encontrada
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+## 🔒 Segurança
+
+O sistema inclui recursos de segurança como:
+- Proteção contra debugging
+- Bloqueio de ferramentas de desenvolvedor
+- Validação de dados
+- Tokens JWT (quando backend implementado)
+
+## 🚀 Deploy
+
+### Vercel (Recomendado)
+```bash
+npm install -g vercel
+vercel --prod
+```
+
+### Netlify
+```bash
+npm run build
+# Upload da pasta 'dist' para Netlify
+```
+
+### Outros Provedores
+```bash
+npm run build
+# Upload da pasta 'dist' para seu provedor
+```
+
+## 📊 Analytics e Monitoramento
+
+O sistema está preparado para:
+- Google Analytics
+- Pixel do Facebook
+- Métricas de conversão
+- Logs de erro (Sentry)
+
+## 🤝 Contribuindo
+
+1. Fork o projeto
+2. Crie uma branch para sua feature
+3. Commit suas mudanças
+4. Push para a branch
+5. Abra um Pull Request
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
+
+## 🆘 Suporte
+
+Para suporte técnico:
+- 📧 Email: suporte@exemplo.com
+- 📞 WhatsApp: +55 11 99999-9999
+- 💬 Discord: [Link do servidor]
+
+## 📈 Roadmap
+
+- [ ] Backend Node.js completo
+- [ ] Banco de dados PostgreSQL
+- [ ] Sistema de usuários
+- [ ] API RESTful
+- [ ] Webhooks do Stripe
+- [ ] Testes automatizados
+- [ ] Docker containerization
+- [ ] CI/CD Pipeline
+
+## 🏆 Recursos Premium
+
+Para a versão completa com backend:
+- Sistema de usuários
+- Banco de dados
+- API completa
+- Webhooks
+- Analytics avançados
+- Suporte técnico
+
+Entre em contato para mais informações sobre a versão premium.
+
+---
+
+**Desenvolvido com ❤️ para maximizar suas conversões de venda**
