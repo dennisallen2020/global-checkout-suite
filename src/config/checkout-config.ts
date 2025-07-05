@@ -23,7 +23,7 @@ export const defaultConfig: CheckoutConfig = {
   originalPrice: 297.00,
   salePrice: 97.00,
   currency: "USD",
-  stripePublishableKey: "pk_test_...", // Replace with your Stripe key
+  stripePublishableKey: import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY || "pk_test_placeholder",
   supportedCurrencies: [
     "USD", "EUR", "BRL", "JPY", "GBP", "CAD", "AUD", "CHF", "CNY", "INR",
     "KRW", "SGD", "HKD", "THB", "MYR", "IDR", "PHP", "VND", "TWD", "AED",
@@ -34,12 +34,12 @@ export const defaultConfig: CheckoutConfig = {
     "hi", "ko", "th", "vi", "tr"
   ],
   securityFeatures: {
-    antiRightClick: true,
-    antiCopy: true,
-    antiDevTools: true,
-    antiDebug: true
+    antiRightClick: false, // Melhorado para não interferir na UX
+    antiCopy: false,       // Melhorado para não interferir na UX
+    antiDevTools: false,   // Melhorado para desenvolvimento
+    antiDebug: false       // Melhorado para desenvolvimento
   },
-  adminPassword: "admin123"
+  adminPassword: "admin123" // TODO: Implementar hash de senha
 };
 
 export const currencySymbols: Record<string, string> = {
